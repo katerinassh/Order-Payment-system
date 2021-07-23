@@ -1,0 +1,34 @@
+{
+  "name": "order-payment-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "mocha",
+    "coverage": "coverage node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/katerinassh/Order-Payment-system.git"
+  },
+  "author": "@katerinassh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/katerinassh/Order-Payment-system/issues"
+  },
+  "homepage": "https://github.com/katerinassh/Order-Payment-system#readme",
+  "dependencies": {
+    "chai": "^4.3.4",
+    "convict": "^6.2.0",
+    "eslint": "^7.31.0",
+    "express": "^4.17.1",
+    "joi": "^17.4.1",
+    "knex": "^0.21.19",
+    "mocha": "^9.0.2",
+    "nyc": "^15.1.0",
+    "objection": "^2.2.15",
+    "pg": "^8.6.0",
+    "sinon": "^11.1.1"
+  }
+}
