@@ -1,4 +1,5 @@
-const express = require('express')
+const express = require('express');
+const knex = require('./db/knex');
 const app = express();
 
 app.get('/', (req, res) => {

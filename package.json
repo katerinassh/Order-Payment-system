@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node ./src/index.js",
     "test": "mocha",
-    "coverage": "coverage node ./src/index.js"
+    "coverage": "coverage node ./src/index.js",
+    "migrate:latest": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "migrate:up": "knex migrate:up",
+    "migrate:down": "knex migrate:down"
   },
   "repository": {
     "type": "git",
@@ -21,6 +25,7 @@
   "dependencies": {
     "chai": "^4.3.4",
     "convict": "^6.2.0",
+    "dotenv": "^10.0.0",
     "eslint": "^7.31.0",
     "express": "^4.17.1",
     "joi": "^17.4.1",
