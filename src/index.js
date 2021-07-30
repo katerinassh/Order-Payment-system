@@ -1,10 +1,21 @@
-const express = require('express')
+const express = require('express');
+const graphql = require('graphql');
+const { graphqlHTTP } = require('express-graphql');
+
+const schema = graphql.buildSchema(`
+  type Query {
+    getHello: String
+  }
+`);
+
+const root = { getHello: () => "Hello world!" };
 
 const app = express();
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+app.use('/', graphqlHTTP({
+  schema,
+  rootValue: root,
+  graphiql: true,
+}));
 
 app.listen(8000, () => {
   console.log('App listening on port 8000!');
