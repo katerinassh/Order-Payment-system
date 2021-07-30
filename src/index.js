@@ -1,4 +1,5 @@
 const express = require('express');
+const knex = require('./db/knex');
 const graphql = require('graphql');
 const { graphqlHTTP } = require('express-graphql');
 
