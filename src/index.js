@@ -1,6 +1,5 @@
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
-const knex = require('../db/knex');
 const schema = require('./schema/schema');
 
 const app = express();
