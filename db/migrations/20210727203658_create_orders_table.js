@@ -13,7 +13,7 @@ exports.up = function (knex) {
       table.timestamp('createdAtTimeISO').defaultTo(knex.fn.now());
       table.string('currencyCode', 255).notNullable();
       table
-        .integer('customer')
+        .integer('customer_id')
         .references('id')
         .inTable('customers');
       table.string('paymentStatus', 255).notNullable();
