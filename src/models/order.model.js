@@ -30,8 +30,8 @@ class Order extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: Customer,
         join: {
-          from: 'orders.customer_id',
-          to: 'customers.id',
+          from: 'customers.id',
+          to: 'orders.customer',
         },
       },
     };

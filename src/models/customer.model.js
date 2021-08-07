@@ -11,6 +11,10 @@ class Customer extends Model {
 
       properties: {
         id: { type: 'integer' },
+        name: { type: 'string ' },
+        surname: { type: 'string ' },
+        phone: { type: 'string ' },
+        email: { type: 'string ' },
       },
     };
   }

@@ -49,7 +49,7 @@ const Mutation = new GraphQLObjectType({
       },
       async resolve(parent, args) {
         const { currencyCode, customer_id, paymentStatus } = args;
-        return Order.transaction(async (trx) => {
+        await Order.transaction(async (trx) => {
           const order = await Order.query(trx).insert({ currencyCode, customer_id, paymentStatus });
           return order;
         });
@@ -77,7 +77,7 @@ const Mutation = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       async resolve(parent, args) {
         const { id } = args;
-        return Order.transaction(async (trx) => {
+        await Order.transaction(async (trx) => {
           const order = await Order.query(trx).deleteById(id);
           return order;
         });
