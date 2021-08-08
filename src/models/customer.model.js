@@ -8,6 +8,7 @@ class Customer extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
+      required: ['name', 'surname', 'phone'],
 
       properties: {
         id: { type: 'integer' },

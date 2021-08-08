@@ -1,10 +1,26 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable camelcase */
 const graphql = require('graphql');
 const Order = require('../models/order.model');
+const OrderProduct = require('../models/order-product.model');
 
 const {
-  GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLInt, GraphQLID, GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLSchema,
+  GraphQLInt,
+  GraphQLID,
+  GraphQLList,
 } = graphql;
+
+const ProductType = new GraphQLObjectType({
+  name: 'Product',
+  fields: () => ({
+    id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    price: { type: GraphQLInt },
+  }),
+});
 
 const OrderType = new GraphQLObjectType({
   name: 'Order',
@@ -14,6 +30,7 @@ const OrderType = new GraphQLObjectType({
     currencyCode: { type: GraphQLString },
     customer: { type: GraphQLInt },
     paymentStatus: { type: GraphQLString },
+    products: { type: GraphQLList(ProductType) },
   }),
 });
 
@@ -23,15 +40,16 @@ const RootQuery = new GraphQLObjectType({
     order: {
       type: OrderType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {
+      async resolve(parent, args) {
         const { id } = args;
-        return Order.query().where('id', id);
+        const orders = await Order.query().withGraphJoined('products').where('orders.id', id).limit(1);
+        return orders[0];
       },
     },
     orders: {
       type: new GraphQLList(OrderType),
       resolve() {
-        return Order.query();
+        return Order.query().withGraphJoined('products');
       },
     },
   },
@@ -46,29 +64,46 @@ const Mutation = new GraphQLObjectType({
         currencyCode: { type: GraphQLString },
         customer_id: { type: GraphQLInt },
         paymentStatus: { type: GraphQLString },
+        products: { type: GraphQLList(GraphQLInt) },
       },
       async resolve(parent, args) {
-        const { currencyCode, customer_id, paymentStatus } = args;
-        await Order.transaction(async (trx) => {
+        const {
+          currencyCode, customer_id, paymentStatus, products,
+        } = args;
+
+        return Order.transaction(async (trx) => {
           const order = await Order.query(trx).insert({ currencyCode, customer_id, paymentStatus });
-          return order;
+          for await (const product_id of products) {
+            await OrderProduct.query(trx).insert({ product_id, order_id: order.id });
+          }
+
+          const orderWithProducts = await Order.query(trx).withGraphJoined('products').where('orders.id', order.id).limit(1);
+          return orderWithProducts[0];
         });
       },
     },
     updateOrder: {
       type: OrderType,
       args: {
-        id: { type: GraphQLID },
+        id: { type: GraphQLInt },
         currencyCode: { type: GraphQLString },
-        customer_id: { type: GraphQLInt, required: false },
-        paymentStatus: { type: GraphQLString, required: false },
+        customer_id: { type: GraphQLInt },
+        paymentStatus: { type: GraphQLString },
+        products: { type: GraphQLList(GraphQLInt) },
       },
       async resolve(parent, args) {
-        const { id, currencyCode, customer_id, paymentStatus } = args;
+        const {
+          id, currencyCode, customer_id, paymentStatus, products,
+        } = args;
         return Order.transaction(async (trx) => {
           await Order.query(trx).update({ currencyCode, customer_id, paymentStatus }).where('id', id);
-          const order = Order.query(trx).findById(id);
-          return order;
+          await OrderProduct.query(trx).delete().where('order_id', id);
+
+          for await (const product_id of products) {
+            await OrderProduct.query(trx).insert({ product_id, order_id: id });
+          }
+
+          return Order.query(trx).findById(id).withGraphJoined('products');
         });
       },
     },
@@ -77,9 +112,9 @@ const Mutation = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       async resolve(parent, args) {
         const { id } = args;
-        await Order.transaction(async (trx) => {
-          const order = await Order.query(trx).deleteById(id);
-          return order;
+        return Order.transaction(async (trx) => {
+          await OrderProduct.query(trx).delete().where('order_id', id);
+          return Order.query(trx).deleteById(id);
         });
       },
     },
