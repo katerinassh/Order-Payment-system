@@ -1,20 +1,10 @@
 const express = require('express');
-const knex = require('./db/knex');
-const graphql = require('graphql');
 const { graphqlHTTP } = require('express-graphql');
-
-const schema = graphql.buildSchema(`
-  type Query {
-    getHello: String
-  }
-`);
-
-const root = { getHello: () => "Hello world!" };
+const schema = require('./schema/schema');
 
 const app = express();
-app.use('/', graphqlHTTP({
+app.use('/graphql', graphqlHTTP({
   schema,
-  rootValue: root,
   graphiql: true,
 }));
 
