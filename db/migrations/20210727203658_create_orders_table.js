@@ -2,6 +2,10 @@ exports.up = function (knex) {
   return knex.schema
     .createTable('customers', (table) => {
       table.increments('id').primary();
+      table.string('name', 255).notNullable();
+      table.string('surname', 255).notNullable();
+      table.string('phone', 12).notNullable();
+      table.string('email', 255).notNullable();
     })
 
     .createTable('orders', (table) => {
@@ -16,6 +20,8 @@ exports.up = function (knex) {
 
     .createTable('products', (table) => {
       table.increments('id').primary();
+      table.string('name', 255).notNullable();
+      table.float('price').notNullable();
     })
 
     .createTable('products_orders', (table) => {
