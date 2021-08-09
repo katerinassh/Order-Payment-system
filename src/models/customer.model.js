@@ -19,9 +19,6 @@ class Customer extends Model {
       },
     };
   }
-  // static get relationMappings() {
-
-  // }
 }
 
 module.exports = Customer;

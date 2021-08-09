@@ -7,11 +7,11 @@ exports.up = function (knex) {
     .createTable('orders', (table) => {
       table.increments('id').primary();
       table.timestamp('createdAtTimeISO').defaultTo(knex.fn.now());
-      table.string('currencyCode', 255).notNullable();
+      table.string('currency_code', 255).notNullable();
       table.integer('customer_id')
         .references('id')
         .inTable('customers');
-      table.string('paymentStatus', 255).notNullable();
+      table.string('payment_status', 255).notNullable();
     })
 
     .createTable('products', (table) => {

@@ -17,9 +17,6 @@ class Product extends Model {
       },
     };
   }
-  // static get relationMappings() {
-
-  // }
 }
 
 module.exports = Product;

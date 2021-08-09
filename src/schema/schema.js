@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable camelcase */
 const graphql = require('graphql');
@@ -27,9 +28,9 @@ const OrderType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     createdAtTimeISO: { type: GraphQLString },
-    currencyCode: { type: GraphQLString },
+    currency_code: { type: GraphQLString },
     customer: { type: GraphQLInt },
-    paymentStatus: { type: GraphQLString },
+    payment_status: { type: GraphQLString },
     products: { type: GraphQLList(ProductType) },
   }),
 });
@@ -61,18 +62,18 @@ const Mutation = new GraphQLObjectType({
     createOrder: {
       type: OrderType,
       args: {
-        currencyCode: { type: GraphQLString },
+        currency_code: { type: GraphQLString },
         customer_id: { type: GraphQLInt },
-        paymentStatus: { type: GraphQLString },
+        payment_status: { type: GraphQLString },
         products: { type: GraphQLList(GraphQLInt) },
       },
       async resolve(parent, args) {
         const {
-          currencyCode, customer_id, paymentStatus, products,
+          currency_code, customer_id, payment_status, products,
         } = args;
 
         return Order.transaction(async (trx) => {
-          const order = await Order.query(trx).insert({ currencyCode, customer_id, paymentStatus });
+          const order = await Order.query(trx).insert({ currency_code, customer_id, payment_status });
           for await (const product_id of products) {
             await OrderProduct.query(trx).insert({ product_id, order_id: order.id });
           }
@@ -86,17 +87,17 @@ const Mutation = new GraphQLObjectType({
       type: OrderType,
       args: {
         id: { type: GraphQLInt },
-        currencyCode: { type: GraphQLString },
+        currency_code: { type: GraphQLString },
         customer_id: { type: GraphQLInt },
-        paymentStatus: { type: GraphQLString },
+        payment_status: { type: GraphQLString },
         products: { type: GraphQLList(GraphQLInt) },
       },
       async resolve(parent, args) {
         const {
-          id, currencyCode, customer_id, paymentStatus, products,
+          id, currency_code, customer_id, payment_status, products,
         } = args;
         return Order.transaction(async (trx) => {
-          await Order.query(trx).update({ currencyCode, customer_id, paymentStatus }).where('id', id);
+          await Order.query(trx).update({ currency_code, customer_id, payment_status }).where('id', id);
           await OrderProduct.query(trx).delete().where('order_id', id);
 
           for await (const product_id of products) {

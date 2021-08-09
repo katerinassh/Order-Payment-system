@@ -18,9 +18,9 @@ class Order extends Model {
       properties: {
         id: { type: 'integer' },
         createdAtTimeISO: { type: 'timestamp' },
-        currencyCode: { type: 'string', minLength: 1, maxLength: 255 },
+        currency_code: { type: 'string', minLength: 1, maxLength: 255 },
         customer_id: { type: 'integer' },
-        paymentStatus: { type: 'string', minLength: 1, maxLength: 255 },
+        payment_status: { type: 'string', minLength: 1, maxLength: 255 },
       },
     };
   }
