@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  server:
+    container_name: order-payment-app
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    ports:
+       - '8000:8000'
+    depends_on:
+      - db
+    networks:
+      - webnet
+
+
+  db:
+    image: 'postgres'
+    container_name: db
+    environment: 
+        POSTGRES_DB: 'order-payment-system'
+        POSTGRES_PASSWORD: '12345'
+        POSTGRES_USER: 'katerina'
+    restart: always
+    stop_grace_period: 10s
+    ports:
+    - '5432:5432'
+    expose:
+      - 5432
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
