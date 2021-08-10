@@ -43,7 +43,7 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       async resolve(parent, args) {
         const { id } = args;
-        const orders = await Order.query().withGraphJoined('products').where('orders.id', id).limit(1);
+        const orders = await Order.query().withGraphJoined('products').where('orders.id', id);
         return orders[0];
       },
     },
@@ -78,7 +78,7 @@ const Mutation = new GraphQLObjectType({
             await OrderProduct.query(trx).insert({ product_id, order_id: order.id });
           }
 
-          const orderWithProducts = await Order.query(trx).withGraphJoined('products').where('orders.id', order.id).limit(1);
+          const orderWithProducts = await Order.query(trx).withGraphJoined('products').where('orders.id', order.id);
           return orderWithProducts[0];
         });
       },
@@ -97,7 +97,13 @@ const Mutation = new GraphQLObjectType({
           id, currency_code, customer_id, payment_status, products,
         } = args;
         return Order.transaction(async (trx) => {
-          await Order.query(trx).update({ currency_code, customer_id, payment_status }).where('id', id);
+          const orderBeforeUpd = await Order.query(trx).findById(id).withGraphJoined('products');
+
+          await Order.query(trx).update({
+            currency_code: currency_code || orderBeforeUpd.currency_code,
+            customer_id: customer_id || orderBeforeUpd.customer_id,
+            payment_status: payment_status || orderBeforeUpd.payment_status,
+          }).where('id', id);
           await OrderProduct.query(trx).delete().where('order_id', id);
 
           for await (const product_id of products) {
