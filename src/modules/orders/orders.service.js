@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable camelcase */
 const Order = require('../../models/order.model');
@@ -18,7 +19,7 @@ async function createOrder(body) {
 
   return Order.transaction(async (trx) => {
     const order = await Order.query(trx).insert({ currency_code, customer_id, payment_status });
-    for await (const product_id of products) {
+    for (const product_id of products) {
       await OrderProduct.query(trx).insert({ product_id, order_id: order.id });
     }
 
@@ -42,7 +43,7 @@ async function updateOrder(body) {
     await OrderProduct.query(trx).delete().where('order_id', id);
 
     if (products) {
-      for await (const product_id of products) {
+      for (const product_id of products) {
         await OrderProduct.query(trx).insert({ product_id, order_id: id });
       }
     }
